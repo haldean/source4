@@ -6,14 +6,13 @@
 class Camera {
   public:
     Camera(
-        const Ray& view, const float focalLength,
-        const float imageWidth, const float imageHeight,
-        const float pixelWidth, const float pixelHeight);
+        const Ray& view, const Vector3f& up, const float focalLength,
+        const float imageWidth, const float imageHeight);
     Ray rayForH(float hx, float hy);
 
   private:
-    Ray& viewRay;
-    float focal;
-    float iw, ih;
-    float pw, ph;
-}
+    Vector3f location;
+    Vector3f f, u, v;
+};
+
+#endif

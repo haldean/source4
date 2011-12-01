@@ -10,6 +10,7 @@ Sphere::~Sphere() {}
 
 Intersection Sphere::intersect(const Ray& ray) const {
   Intersection result;
+  result.geom = this;
 
   float a = ray.dir.dot(ray.dir)
     , b = 2 * (ray.dir.dot(ray.origin) - _center.dot(ray.dir))

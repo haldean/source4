@@ -38,4 +38,18 @@ void test_sphere_intersection() {
 int main() {
   test_sphere_intersection();
 }
+#else
+int main() {
+  Camera camera(
+      Ray(Vector3f(0, 0, 0), Vector3f(1, 0, 0)),
+      Vector3f(0, 0, 1), 1, (float) width / (float) height, 1);
+  image<rgb_pixel> img(width, height);
+  vector<TexturedGeometry> geom;
+
+  {
+    Sphere* s = new Sphere(1, Vector3f(3, 0, 0));
+    ColorMaterial* cm = new ColorMaterial(Color(1., 0., 0.));
+    geom.push_back(TexturedGeometry(s, cm));
+  }
+}
 #endif

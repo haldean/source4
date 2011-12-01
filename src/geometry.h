@@ -12,6 +12,7 @@ struct Intersection {
   bool intersects;
   float s;
   Vector3f location;
+  Geometry* geom;
 };
 
 class Ray {

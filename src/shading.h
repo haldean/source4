@@ -2,12 +2,17 @@
 #define __CRENDER_SHADING_H__
 
 #include "geometry.h"
+#include <ostream>
+
+using namespace std;
 
 class Color {
   public:
     float r, g, b;
     Color(float r, float g, float b) : r(r), g(g), b(b) {}
 };
+
+ostream& operator<<(ostream&, const Color&);
 
 class Material {
   public:
