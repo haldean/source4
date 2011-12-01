@@ -22,35 +22,37 @@ Color color_at_ray(Ray& ray, vector<TexturedGeometry>& geom) {
     return background_color();
   }
 
-  Intersection min = geom[0].geom.intersect(ray);
+  Intersection min = geom[0].geom->intersect(ray);
   TexturedGeometry minGeometry = geom[0];
 
-  for (vector<TexturedGeometry>::const_iterator iter = geom.begin() + 1;
-       iter != geom.end(); iter++) {
-    Intersection test = iter->geom.intersect(ray);
+  for (uint i=1; i<geom.size(); i++) {
+    Intersection test = geom[i].geom->intersect(ray);
     if (!test.intersects) continue;
     if (!min.intersects || min.s > test.s) {
       min = test;
-      minGeometry = *iter;
+      minGeometry = geom[i];
     }
   }
 
   if (min.intersects) {
-    cout << "Intersection!" << endl;
     return minGeometry.evaluateAt(ray, min.location);
   }
   return background_color();
 }
 
-void render() {
-  image<rgb_pixel> img(400, 400);
+void render(int width, int height) {
+  image<rgb_pixel> img(width, height);
   vector<TexturedGeometry> geom;
-  geom.push_back(TexturedGeometry(
-        Sphere(100, Vector3f(100, 0, 0)),
-        ColorMaterial(Color(1., 0., 0.))));
-  for (int i=0; i<400; i++) {
-    for (int j=0; j<400; j++) {
-      Ray ray(Vector3f(0, j-200, i-200), Vector3f(1, 0, 0));
+
+  {
+    Sphere* s = new Sphere(1, Vector3f(3, 0, 0));
+    ColorMaterial* cm = new ColorMaterial(Color(1., 0., 0.));
+    geom.push_back(TexturedGeometry(s, cm));
+  }
+
+  for (float i=0; i<1; i += 1. / (float) width) {
+    for (float j=0; j<1; j += 1. / (float) height) {
+      Ray ray(Vector3f(0, 0, 0), Vector3f(1, i, j));
       img.set_pixel(i, j, pixel_for(color_at_ray(ray, geom)));
     }
   }
@@ -58,5 +60,5 @@ void render() {
 }
 
 int main() {
-  render();
+  render(600, 300);
 }

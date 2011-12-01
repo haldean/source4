@@ -12,28 +12,27 @@ class Color {
 class Material {
   public:
     virtual Color evaluateAt(
-        const Ray& ray, const Vector3f& location, const Geometry& geom) const {
-      return Color(0, 0, 0);
-    };
+        const Ray& ray, const Vector3f& location,
+        const Geometry* geom) const = 0;
 };
 
 class ColorMaterial : public Material {
   public:
     ColorMaterial(const Color& c) : color(c) {}
     Color evaluateAt(
-        const Ray& ray, const Vector3f& location, const Geometry& geom) const;
+        const Ray& ray, const Vector3f& location, const Geometry* geom) const;
     Color color;
 };
 
 class TexturedGeometry {
   public:
-    Geometry geom;
-    Material material;
+    Geometry* geom;
+    Material* material;
 
-    TexturedGeometry(const Geometry& geom, const Material& mat)
+    TexturedGeometry(Geometry* geom, Material* mat)
       : geom(geom), material(mat) {}
     Color evaluateAt(const Ray& ray, const Vector3f& location) const {
-      return material.evaluateAt(ray, location, geom);
+      return material->evaluateAt(ray, location, geom);
     }
 };
 

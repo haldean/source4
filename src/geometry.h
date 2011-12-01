@@ -2,8 +2,11 @@
 #define __CRENDER_GEOMETRY_H__
 
 #include <Eigen/Dense>
+#include <ostream>
+#include <iostream>
 
 using namespace Eigen;
+using namespace std;
 
 struct Intersection {
   bool intersects;
@@ -13,8 +16,7 @@ struct Intersection {
 
 class Ray {
   public:
-    Ray(const Vector3f& origin, const Vector3f& direction)
-      : origin(origin), dir(direction) {}
+    Ray(const Vector3f& origin, const Vector3f& direction);
     Ray(const Ray& other)
       : origin(other.origin), dir(other.dir) {}
     ~Ray() {}
@@ -23,13 +25,11 @@ class Ray {
     Vector3f dir;
 };
 
+ostream& operator<<(ostream&, const Ray&);
+
 class Geometry {
   public:
-    virtual Intersection intersect(const Ray& ray) const {
-      Intersection i;
-      i.intersects = false;
-      return i;
-    };
+    virtual Intersection intersect(const Ray& ray) const = 0;
 };
 
 class Sphere : public Geometry {

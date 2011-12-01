@@ -11,11 +11,10 @@ Sphere::~Sphere() {}
 Intersection Sphere::intersect(const Ray& ray) const {
   Intersection result;
 
-  Vector3f dir = ray.dir, pos = ray.origin;
-
-  float a = dir.dot(dir)
-    , b = 2 * (dir.dot(pos) - _center.dot(dir))
-    , c = pos.dot(pos) + _center.dot(_center) - 2 * pos.dot(_center) - _r * _r;
+  float a = ray.dir.dot(ray.dir)
+    , b = 2 * (ray.dir.dot(ray.origin) - _center.dot(ray.dir))
+    , c = ray.origin.dot(ray.origin) + _center.dot(_center)
+          - 2 * ray.origin.dot(_center) - _r * _r;
 
   float disc = b * b - 4 * a * c;
   /* Both roots are complex */
@@ -30,9 +29,9 @@ Intersection Sphere::intersect(const Ray& ray) const {
   float s2 = (-b - sqrt(disc)) / (2 * a);
 
   if (s1 <= s2) {
-    result.location = pos + s1 * dir;
+    result.location = ray.origin + s1 * ray.dir;
   } else {
-    result.location = pos + s2 * dir;
+    result.location = ray.origin + s2 * ray.dir;
   }
 
   return result;
