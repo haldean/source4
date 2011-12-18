@@ -8,6 +8,12 @@ Sphere::Sphere(const Sphere& other)
 
 Sphere::~Sphere() {}
 
+Vector3f Sphere::normal(const Vector3f& location) const {
+  Vector3f normal = location - _center;
+  normal.normalize();
+  return normal;
+}
+
 Intersection Sphere::intersect(const Ray& ray) const {
   Intersection result;
   result.geom = this;

@@ -2,29 +2,32 @@
 #define __CRENDER_SCENE_H__
 
 #include <vector>
+#include <ostream>
 
 #include "geometry.h"
 #include "camera.h"
-#include "shading.h"
 
 using namespace std;
 
 class Scene {
   public:
-    Scene(GeometrySet&, Camera&, vector<Light>&, int, int);
+    Scene();
+    Scene(GeometrySet&, Camera&, vector<PointLight>&, int, int);
     void render();
-
-  private:
-    Color colorAtRay(Ray&);
 
     GeometrySet geom;
     Camera camera;
-    vector<Light> lights;
+    vector<PointLight> lights;
 
     Color background_color;
 
     int width;
     int height;
-}
+
+  private:
+    Color colorAtRay(Ray&);
+};
+
+ostream& operator<<(ostream&, const Scene&);
 
 #endif
