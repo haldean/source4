@@ -17,6 +17,18 @@ void parseSphere(string& line, Scene& scene) {
   scene.geom.addGeometry(sphere);
 }
 
+void parseTriangle(string& line, Scene& scene) {
+  Vector3f p1, p2, p3;
+  sscanf(line.c_str(), "t %f %f %f %f %f %f %f %f %f",
+      &p1[0], &p1[1], &p1[2],
+      &p2[0], &p2[1], &p2[2],
+      &p3[0], &p3[1], &p3[2]);
+
+  Triangle* triangle = new Triangle(p1, p2, p3);
+  triangle->material = currentMaterial;
+  scene.geom.addGeometry(triangle);
+}
+
 void parseCamera(string& line, Scene& scene) {
   Vector3f up(0, 1, 0), direction, position;
   float focalLength, iw, ih;
@@ -72,7 +84,7 @@ void parseLine(string& line, Scene& scene) {
   } else if (cmd == "c") {
     parseCamera(line, scene);
   } else if (cmd == "t") {
-    cout << "triangle unsupported" << endl;
+    parseTriangle(line, scene);
   } else if (cmd == "m") {
     parseMaterial(line);
   } else if (cmd == "l") {

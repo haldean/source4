@@ -1,5 +1,4 @@
 Ideal specular reflection
-Triangles
 Planes
 EXR output
 Occlusion
@@ -9,3 +8,5 @@ Normal interpolation
 Refraction
 Depth of field
 Area lights
+OBJ import
+Efficient intersection

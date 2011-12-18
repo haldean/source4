@@ -55,13 +55,21 @@ ostream& operator<<(ostream& stream, const Scene& scene) {
 
 #ifdef SCENE_TEST
 int main() {
-  Sphere* sphere = new Sphere(1, Vector3f(5, 0, 0));
+#else
+int scene_test() {
+#endif
+  Sphere* sphere = new Sphere(1, Vector3f(5, -1, -1));
+  Triangle* triangle = new Triangle(
+      Vector3f(5, 0, 0), Vector3f(5, 1, 0), Vector3f(5, 0, 1));
+
   PhongMaterial* red = new PhongMaterial(
-      Color(1, 1, 1), Color(.7, 0, 0), Color(.7, .0, .0), 8);
+      Color(1, 1, 1), Color(.7, 0, 0), Color(.7, .0, .0), Color(0, 0, 0), 8);
   sphere->material = red;
+  triangle->material = red;
 
   GeometrySet geom;
   geom.addGeometry(sphere);
+  geom.addGeometry(triangle);
 
   Camera c(
       Ray(Vector3f(0, 0, 0), Vector3f(1, 0, 0)),
@@ -74,5 +82,5 @@ int main() {
         Color(.3, .3, .3), Vector3f(0, 0, 5)));
 
   Scene(geom, c, lights, 600, 600).render();
+  return 0;
 }
-#endif

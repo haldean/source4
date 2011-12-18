@@ -30,4 +30,8 @@ class Scene {
 
 ostream& operator<<(ostream&, const Scene&);
 
+#ifndef SCENE_TEST
+int scene_test();
+#endif
+
 #endif

@@ -2,6 +2,7 @@
 #define __CRENDER_GEOMETRY_H__
 
 #include <Eigen/Core>
+#include <Eigen/Dense>
 #include <ostream>
 #include <iostream>
 #include <vector>
@@ -121,7 +122,6 @@ class Sphere : public Geometry {
     const Vector3f _center;
 };
 
-/*
 class Triangle : public Geometry {
   public:
     Triangle(const Vector3f& p1, const Vector3f& p2, const Vector3f& p3);
@@ -133,7 +133,7 @@ class Triangle : public Geometry {
 
   private:
     const Vector3f p1, p2, p3;
-}
-*/
+    Vector3f norm;
+};
 
 #endif
