@@ -14,7 +14,7 @@ $(BINARY): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 run: all
-	./${BINARY}
+	./${BINARY} && feh test.png
 
 clean:
 	rm -f ${OBJECTS} ${BINARY}

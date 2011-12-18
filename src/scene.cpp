@@ -59,6 +59,7 @@ int main() {
 int scene_test() {
 #endif
   Sphere* sphere = new Sphere(1, Vector3f(5, -1, -1));
+  Sphere* sphere2 = new Sphere(.5, Vector3f(4, 0, 0));
   Triangle* triangle = new Triangle(
       Vector3f(5, 0, 0), Vector3f(5, 1, 0), Vector3f(5, 0, 1));
   Plane* plane = new Plane(Vector3f(8, 0, 0), Vector3f(-1, 0, 0));
@@ -69,11 +70,13 @@ int scene_test() {
       Color(1, 1, 1), Color(0, .7, 0), Color(0, .7, 0), Color(0, 0, 0), 8);
 
   sphere->material = red;
+  sphere2->material = green;
   triangle->material = red;
   plane->material = green;
 
   GeometrySet geom;
   geom.addGeometry(sphere);
+  geom.addGeometry(sphere2);
   geom.addGeometry(triangle);
   geom.addGeometry(plane);
 

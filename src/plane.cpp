@@ -16,6 +16,7 @@ Intersection Plane::intersect(const Ray& ray) const {
     (location.dot(norm) - ray.origin.dot(norm)) / ray.dir.dot(norm);
 
   if (s > 0) {
+    result.s = s;
     result.intersects = true;
     result.location = ray.origin + s * ray.dir;
   } else {

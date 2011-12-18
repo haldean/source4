@@ -36,8 +36,10 @@ Intersection Sphere::intersect(const Ray& ray) const {
   float s2 = (-b - sqrt(disc)) / (2 * a);
 
   if (s1 <= s2 && s1 > 0) {
+    result.s = s1;
     result.location = ray.origin + s1 * ray.dir;
   } else if (s2 > 0) {
+    result.s = s2;
     result.location = ray.origin + s2 * ray.dir;
   } else {
     result.intersects = false;

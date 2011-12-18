@@ -29,6 +29,9 @@ class GeometrySet {
     GeometrySet();
     void addGeometry(Geometry*);
     Intersection intersect(const Ray&) const;
+    Intersection intersect(const Ray&, const Geometry* ignore) const;
+    Intersection intersect(
+        const Ray&, const float& smax, const Geometry* ignore) const;
     int size() const;
     vector<Geometry*> geom;
 };
@@ -63,7 +66,7 @@ class Material {
     virtual Color evaluateAt(
         const Ray& ray, const Vector3f& location,
         const Vector3f& normal, const vector<PointLight>& lights,
-        const GeometrySet& geom) const = 0;
+        const GeometrySet& geom, const Geometry* primitive) const = 0;
 };
 
 class ColorMaterial : public Material {
@@ -72,7 +75,7 @@ class ColorMaterial : public Material {
     Color evaluateAt(
         const Ray& ray, const Vector3f& location,
         const Vector3f& normal, const vector<PointLight>& lights,
-        const GeometrySet& geom) const;
+        const GeometrySet& geom, const Geometry* primitive) const;
   private:
     Color color;
 };
@@ -86,7 +89,7 @@ class PhongMaterial : public Material {
     Color evaluateAt(
         const Ray& ray, const Vector3f& location,
         const Vector3f& normal, const vector<PointLight>& lights,
-        const GeometrySet& geom) const;
+        const GeometrySet& geom, const Geometry* primitive) const;
 
     const Color& specular;
     const Color& diffuse;

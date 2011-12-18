@@ -20,7 +20,7 @@ Color Geometry::colorAt(
   }
 
   return material->evaluateAt(
-      incident, location, normal(location), lights, geom);
+      incident, location, normal(location), lights, geom, this);
 }
 
 GeometrySet::GeometrySet() : geom() {}
@@ -29,11 +29,17 @@ void GeometrySet::addGeometry(Geometry* g) {
   geom.push_back(g);
 }
 
-Intersection GeometrySet::intersect(const Ray& ray) const {
+Intersection GeometrySet::intersect(
+    const Ray& ray, const Geometry* ignore) const {
   uint i = 0;
   Intersection min = noIntersection();
 
   do {
+    if (geom[i] == ignore) {
+      i++;
+      continue;
+    }
+
     Intersection test = geom[i]->intersect(ray);
     if (test.intersects && (!min.intersects || min.s > test.s)) {
       min = test;
@@ -43,6 +49,17 @@ Intersection GeometrySet::intersect(const Ray& ray) const {
   } while (i < geom.size());
 
   return min;
+}
+
+Intersection GeometrySet::intersect(const Ray& ray) const {
+  return intersect(ray, NULL);
+}
+
+Intersection GeometrySet::intersect(
+    const Ray& ray, const float& smax, const Geometry* ignore) const {
+  Intersection result = intersect(ray, ignore);
+  result.intersects &= result.s < smax;
+  return result;
 }
 
 int GeometrySet::size() const {

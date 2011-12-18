@@ -48,6 +48,7 @@ Intersection Triangle::intersect(const Ray& ray) const {
 
   result.intersects = true;
   result.location = ray.origin + s * ray.dir;
+  result.s = s;
   return result;
 }
 

@@ -47,7 +47,7 @@ Color Color::operator*(double scale) const {
 Color ColorMaterial::evaluateAt(
     const Ray& ray, const Vector3f& location,
     const Vector3f& normal, const vector<PointLight>& lights,
-    const GeometrySet& geom) const {
+    const GeometrySet& geom, const Geometry* primitive) const {
   return color;
 }
 
@@ -60,7 +60,7 @@ PhongMaterial::PhongMaterial(
 Color PhongMaterial::evaluateAt(
     const Ray& ray, const Vector3f& location,
     const Vector3f& n_hat, const vector<PointLight>& lights,
-    const GeometrySet& geom) const {
+    const GeometrySet& geom, const Geometry* primitive) const {
   Color result(0, 0, 0);
 
   for (vector<PointLight>::const_iterator light = lights.begin();
@@ -69,7 +69,17 @@ Color PhongMaterial::evaluateAt(
 
     if (!light->diffuse.zero() || !light->ambient.zero()) {
       Vector3f l_hat = light->location - location;
-      l_hat.normalize();
+      float dist = l_hat.norm();
+      l_hat /= dist;
+
+      /* Check to see if there's geometry between this point and the light
+       * source, and if there is, ignore this light's contribution */
+      Intersection isect = geom.intersect(
+          Ray(location, l_hat), dist, primitive);
+      if (isect.intersects) {
+        continue;
+      }
+
       double ln = l_hat.dot(n_hat);
       result += (diffuse * light->diffuse) * max(0., ln);
 
