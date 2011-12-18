@@ -136,4 +136,17 @@ class Triangle : public Geometry {
     Vector3f norm;
 };
 
+class Plane : public Geometry {
+  public:
+    Plane(const Vector3f& location, const Vector3f& normal);
+    Plane(const Plane&);
+    ~Plane();
+
+    Intersection intersect(const Ray& ray) const;
+    Vector3f normal(const Vector3f& location) const;
+
+  private:
+    const Vector3f location, norm;
+};
+
 #endif

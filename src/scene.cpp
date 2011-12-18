@@ -61,15 +61,21 @@ int scene_test() {
   Sphere* sphere = new Sphere(1, Vector3f(5, -1, -1));
   Triangle* triangle = new Triangle(
       Vector3f(5, 0, 0), Vector3f(5, 1, 0), Vector3f(5, 0, 1));
+  Plane* plane = new Plane(Vector3f(8, 0, 0), Vector3f(-1, 0, 0));
 
   PhongMaterial* red = new PhongMaterial(
-      Color(1, 1, 1), Color(.7, 0, 0), Color(.7, .0, .0), Color(0, 0, 0), 8);
+      Color(1, 1, 1), Color(.7, 0, 0), Color(.7, 0, 0), Color(0, 0, 0), 8);
+  PhongMaterial* green = new PhongMaterial(
+      Color(1, 1, 1), Color(0, .7, 0), Color(0, .7, 0), Color(0, 0, 0), 8);
+
   sphere->material = red;
   triangle->material = red;
+  plane->material = green;
 
   GeometrySet geom;
   geom.addGeometry(sphere);
   geom.addGeometry(triangle);
+  geom.addGeometry(plane);
 
   Camera c(
       Ray(Vector3f(0, 0, 0), Vector3f(1, 0, 0)),

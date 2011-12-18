@@ -3,7 +3,7 @@
 #include <fstream>
 
 int main(int argc, char* argv[]) {
-  //return scene_test();
+  return scene_test();
 
   if (argc != 2) {
     cerr << "Must provide input file" << endl;
