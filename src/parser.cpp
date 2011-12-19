@@ -81,8 +81,17 @@ void parseMaterial(string& line) {
       &(diff->r), &(diff->g), &(diff->b), &(spec->r), &(spec->g), &(spec->b),
       &phexp, &(idealspec->r), &(idealspec->g), &(idealspec->b));
 
+  cout << *idealspec << endl;
   currentMaterial = 
     new PhongMaterial(*spec, *diff, *diff, *idealspec, phexp);
+}
+
+void parseOption(string& line, Scene& scene) {
+  if (line[3] == 'a') {
+    int msaa;
+    sscanf(line.c_str(), "o a %d", &msaa);
+    scene.msaa = msaa;
+  }
 }
 
 void parseLine(string& line, Scene& scene) {
@@ -101,6 +110,8 @@ void parseLine(string& line, Scene& scene) {
     parseLight(line, scene);
   } else if (cmd == "o") {
     cout << "option unsupported" << endl;
+  } else if (cmd == "p") {
+    parsePlane(line, scene);
   } else {
     cout << "unrecognized command: " << cmd << endl;
   }

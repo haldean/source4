@@ -26,8 +26,8 @@ class Scene {
 
     int msaa;
 
-  private:
-    Color colorAtRay(Ray&);
+    Color colorAtRay(Ray&) const;
+    Color colorAtRay(Ray&, const Geometry* ignore, const int depth) const;
 };
 
 ostream& operator<<(ostream&, const Scene&);

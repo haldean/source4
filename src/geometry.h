@@ -16,6 +16,7 @@ ostream& operator<<(ostream&, const Ray&);
 
 struct Intersection;
 class Geometry;
+class Scene;
 
 struct Intersection {
   bool intersects;
@@ -55,27 +56,29 @@ class PointLight {
   public:
     PointLight(Color spec, Color diff, Color amb, Vector3f loc)
       : specular(spec), diffuse(diff), ambient(amb), location(loc) {}
+    PointLight(Color spec, Color diff, Color amb, Vector3f loc, bool dir)
+      : specular(spec), diffuse(diff), ambient(amb),
+        location(loc), directional(dir) {}
 
     Color specular, diffuse, ambient;
     float phong;
     Vector3f location;
+    bool directional;
 };
 
 class Material {
   public:
     virtual Color evaluateAt(
-        const Ray& ray, const Vector3f& location,
-        const Vector3f& normal, const vector<PointLight>& lights,
-        const GeometrySet& geom, const Geometry* primitive) const = 0;
+        const Ray& ray, const Vector3f& location, const Vector3f& normal,
+        const Scene&, const Geometry* primitive, const int depth) const = 0;
 };
 
 class ColorMaterial : public Material {
   public:
     ColorMaterial(const Color& c) : color(c) {}
     Color evaluateAt(
-        const Ray& ray, const Vector3f& location,
-        const Vector3f& normal, const vector<PointLight>& lights,
-        const GeometrySet& geom, const Geometry* primitive) const;
+        const Ray& ray, const Vector3f& location, const Vector3f& normal,
+        const Scene&, const Geometry* primitive, const int depth) const;
   private:
     Color color;
 };
@@ -87,9 +90,8 @@ class PhongMaterial : public Material {
         const Color& ambient, const Color& idealspec,
         const double phongExp);
     Color evaluateAt(
-        const Ray& ray, const Vector3f& location,
-        const Vector3f& normal, const vector<PointLight>& lights,
-        const GeometrySet& geom, const Geometry* primitive) const;
+        const Ray& ray, const Vector3f& location, const Vector3f& normal,
+        const Scene&, const Geometry* primitive, const int depth) const;
 
     const Color& specular;
     const Color& diffuse;
@@ -107,7 +109,7 @@ class Geometry {
 
     Color colorAt(
         const Vector3f& location, const Ray& incident,
-        const vector<PointLight>& lights, const GeometrySet& geom) const;
+        const Scene& scene, int depth) const;
     Material* material;
 };
 

@@ -1,4 +1,5 @@
 #include "geometry.h"
+#include "scene.h"
 
 ostream& operator<<(ostream& stream, const Color& color) {
   stream << "(color r:" << color.r << " g:" << color.g
@@ -45,9 +46,8 @@ Color Color::operator*(double scale) const {
 }
 
 Color ColorMaterial::evaluateAt(
-    const Ray& ray, const Vector3f& location,
-    const Vector3f& normal, const vector<PointLight>& lights,
-    const GeometrySet& geom, const Geometry* primitive) const {
+    const Ray& ray, const Vector3f& location, const Vector3f& normal,
+    const Scene& scene, const Geometry* primitive, const int depth) const {
   return color;
 }
 
@@ -58,23 +58,40 @@ PhongMaterial::PhongMaterial(
     idealspec(idealspec), phongExp(phongExp) {};
 
 Color PhongMaterial::evaluateAt(
-    const Ray& ray, const Vector3f& location,
-    const Vector3f& n_hat, const vector<PointLight>& lights,
-    const GeometrySet& geom, const Geometry* primitive) const {
+    const Ray& ray, const Vector3f& location, const Vector3f& n_hat,
+    const Scene& scene, const Geometry* primitive, const int depth) const {
   Color result(0, 0, 0);
 
-  for (vector<PointLight>::const_iterator light = lights.begin();
-       light != lights.end(); light++) {
+  if (!idealspec.zero() && depth < 4) {
+    Vector3f reflectDirection = ray.dir - 2 * n_hat.dot(ray.dir) * n_hat;
+    Ray newRay(location, reflectDirection);
+    Color reflect = scene.colorAtRay(newRay, primitive, depth + 1);
+    result += idealspec * reflect;
+  }
+
+  for (vector<PointLight>::const_iterator light = scene.lights.begin();
+       light != scene.lights.end(); light++) {
     result += ambient * light->ambient;
 
     if (!light->diffuse.zero() || !light->ambient.zero()) {
-      Vector3f l_hat = light->location - location;
-      float dist = l_hat.norm();
+      Vector3f l_hat, r_hat;
+      float dist = INFINITY;
+
+      if (light->directional) {
+        l_hat = light->location;
+      } else {
+        l_hat = light->location - location;
+        dist = l_hat.norm();
+      }
+
       l_hat /= dist;
+
+      r_hat = 2 * l_hat.dot(n_hat) * n_hat - l_hat;
+      r_hat.normalize();
 
       /* Check to see if there's geometry between this point and the light
        * source, and if there is, ignore this light's contribution */
-      Intersection isect = geom.intersect(
+      Intersection isect = scene.geom.intersect(
           Ray(location, l_hat), dist, primitive);
       if (isect.intersects) {
         continue;
@@ -84,8 +101,6 @@ Color PhongMaterial::evaluateAt(
       result += (diffuse * light->diffuse) * max(0., ln);
 
       if (!light->specular.zero()) {
-        Vector3f r_hat = 2 * l_hat.dot(n_hat) * n_hat - l_hat;
-        r_hat.normalize();
         double rd = r_hat.dot(-ray.dir);
         result += (specular * light->specular) * pow(max(0., rd), phongExp);
       }

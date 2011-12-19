@@ -18,16 +18,21 @@ rgb_pixel pixel_for(Color c) {
   return rgb_pixel(c.r * 255, c.g * 255, c.b * 255);
 }
 
-Color Scene::colorAtRay(Ray& ray) {
+Color Scene::colorAtRay(
+    Ray& ray, const Geometry* ignore, const int depth) const {
   if (geom.size() == 0) {
     return background_color;
   }
 
-  Intersection pt = geom.intersect(ray);
+  Intersection pt = geom.intersect(ray, ignore);
   if (pt.intersects) {
-    return pt.geom->colorAt(pt.location, ray, lights, geom);
+    return pt.geom->colorAt(pt.location, ray, *this, depth);
   }
   return background_color;
+}
+
+Color Scene::colorAtRay(Ray& ray) const {
+  return colorAtRay(ray, NULL, 0);
 }
 
 void Scene::render() {

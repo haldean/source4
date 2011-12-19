@@ -13,14 +13,14 @@ Intersection noIntersection() {
 
 Color Geometry::colorAt(
     const Vector3f& location, const Ray& incident,
-    const vector<PointLight>& lights, const GeometrySet& geom) const {
+    const Scene& scene, int depth) const {
   if (material == NULL) {
     cerr << "Warning: intersection with geometry without material." << endl;
     return Color(0, 0, 0);
   }
 
   return material->evaluateAt(
-      incident, location, normal(location), lights, geom, this);
+      incident, location, normal(location), scene, this, depth);
 }
 
 GeometrySet::GeometrySet() : geom() {}
