@@ -1,0 +1,27 @@
+PHASE 1
+[X] Command file parsing
+[X] Camera
+[X] Ray generation
+[X] Intersection with spheres
+[X] EXR output
+
+PHASE 2
+[X] Recursive ray tracing
+[X] Blinn-Phong shading
+[X] Point, directional and ambient lights
+[X] Hard shadows
+[X] Ideal reflection
+[X] Spheres, triangles and planes
+
+PHASE 3
+[X] Antialiasing
+[ ] OBJ files with normal interpolation
+[ ] BVH for intersection
+
+EXTRA
+[ ] Refraction
+[ ] Multithreading
+[I] Transforms
+[ ] Depth of field
+[I] Motion blur
+[I] Area lights and soft shadows

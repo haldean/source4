@@ -19,8 +19,8 @@ Color Geometry::colorAt(
     return Color(0, 0, 0);
   }
 
-  return material->evaluateAt(
-      incident, location, normal(location), scene, this, depth);
+  Vector3f norm = normal(location);
+  return material->evaluateAt(incident, location, norm, scene, this, depth);
 }
 
 GeometrySet::GeometrySet() : geom() {}

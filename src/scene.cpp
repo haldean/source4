@@ -1,10 +1,9 @@
 #include <Eigen/Dense>
-#include <png++/png.hpp>
 #include <vector>
 
 #include "scene.h"
+#include "image.h"
 
-using namespace png;
 using namespace std;
 using namespace Eigen;
 
@@ -13,10 +12,6 @@ Scene::Scene() : background_color(0., 0., 0.), msaa(1) { }
 Scene::Scene(GeometrySet& gs, Camera& c, vector<PointLight>& ls, int w, int h) 
 : geom(gs), camera(c), lights(ls), background_color(0.f, 0.f, 0.f),
 width(w), height(h), msaa(1) {}
-
-rgb_pixel pixel_for(Color c) {
-  return rgb_pixel(c.r * 255, c.g * 255, c.b * 255);
-}
 
 Color Scene::colorAtRay(
     Ray& ray, const Geometry* ignore, const int depth) const {
@@ -32,11 +27,12 @@ Color Scene::colorAtRay(
 }
 
 Color Scene::colorAtRay(Ray& ray) const {
+  //cout << ray << endl;
   return colorAtRay(ray, NULL, 0);
 }
 
 void Scene::render() {
-  image<rgb_pixel> img(width, height);
+  Image img(width, height);
 
   for (float i = -0.5; i <= 0.5; i += 1. / (float) width) {
     for (float j = -0.5; j <= 0.5; j += 1. / (float) height) {
@@ -46,7 +42,7 @@ void Scene::render() {
       if (msaa == 1) {
         Ray ray = camera.rayForH(i, j);
         Color pixel = colorAtRay(ray);
-        img.set_pixel(pi, pj, pixel_for(pixel));
+        img.setPixel(pi, pj, pixel);
       } else {
         float r = 0, g = 0, b = 0;
 
@@ -68,12 +64,15 @@ void Scene::render() {
         g /= msaa;
         b /= msaa;
 
-        img.set_pixel(pi, pj, pixel_for(Color(r, g, b)));
+        img.setPixel(pi, pj, Color(r, g, b));
       }
     }
   }
 
-  img.write("test.png");
+#ifdef WRITE_PNG
+  img.writePng("test.png");
+#endif
+  img.writeExr("test.exr");
 }
 
 ostream& operator<<(ostream& stream, const Scene& scene) {

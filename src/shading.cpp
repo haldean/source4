@@ -58,9 +58,10 @@ PhongMaterial::PhongMaterial(
     idealspec(idealspec), phongExp(phongExp) {};
 
 Color PhongMaterial::evaluateAt(
-    const Ray& ray, const Vector3f& location, const Vector3f& n_hat,
+    const Ray& ray, const Vector3f& location, const Vector3f& n,
     const Scene& scene, const Geometry* primitive, const int depth) const {
   Color result(0, 0, 0);
+  Vector3f n_hat = n / n.norm();
 
   if (!idealspec.zero() && depth < 4) {
     Vector3f reflectDirection = ray.dir - 2 * n_hat.dot(ray.dir) * n_hat;
@@ -73,17 +74,15 @@ Color PhongMaterial::evaluateAt(
        light != scene.lights.end(); light++) {
     result += ambient * light->ambient;
 
-    if (!light->diffuse.zero() || !light->ambient.zero()) {
+    if (!light->diffuse.zero() || !light->specular.zero()) {
       Vector3f l_hat, r_hat;
-      float dist = INFINITY;
 
       if (light->directional) {
         l_hat = light->location;
       } else {
         l_hat = light->location - location;
-        dist = l_hat.norm();
       }
-
+      float dist = l_hat.norm();
       l_hat /= dist;
 
       r_hat = 2 * l_hat.dot(n_hat) * n_hat - l_hat;
@@ -99,6 +98,7 @@ Color PhongMaterial::evaluateAt(
 
       double ln = l_hat.dot(n_hat);
       result += (diffuse * light->diffuse) * max(0., ln);
+      if (ln > 0)
 
       if (!light->specular.zero()) {
         double rd = r_hat.dot(-ray.dir);

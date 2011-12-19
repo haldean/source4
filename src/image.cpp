@@ -1,16 +1,33 @@
-#include <png++/png.hpp>
+#include "image.h"
+#include <ImfStringAttribute.h>
+#include <ImfMatrixAttribute.h>
 
+Image::Image(int width, int height) : w(width), h(height) {
+  pixels.resizeErase(height, width);
+}
+
+void Image::setPixel(int i, int j, const Color& color) {
+  pixels[j][i] = Rgba(color.r, color.g, color.b, 1);
+}
+
+void Image::writeExr(const string& path) const {
+  RgbaOutputFile file(path.c_str(), w, h, WRITE_RGBA);
+  file.setFrameBuffer(&(pixels[0][0]), 1, w);
+  file.writePixels(h);
+}
+
+#ifdef WRITE_PNG
+#include <png++/png.hpp>
 using namespace png;
 
-int test_image() {
-  image<rgb_pixel> img(400, 400);
-
-  for (int i=0; i<400; i++) {
-    for (int j=0; j<400; j++) {
-      img.set_pixel(i, j, rgb_pixel(0, 255, 0));
+void Image::writePng(const string& path) const {
+  image<rgb_pixel> output(w, h);
+  for (int i=0; i<w; i++) {
+    for (int j=0; j<h; j++) {
+      Rgba pixel = pixels[j][i];
+      output[j][i] = rgb_pixel(pixel.r * 255, pixel.g * 255, pixel.b * 255);
     }
   }
-
-  img.write("test.png");
-  return 0;
+  output.write(path);
 }
+#endif

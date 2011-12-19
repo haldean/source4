@@ -1,6 +1,8 @@
 #include "parser.h"
 #include "geometry.h"
+#include "objparse.h"
 
+#include <fstream>
 #include <cstdio>
 
 Material* currentMaterial = NULL;
@@ -40,14 +42,15 @@ void parsePlane(string& line, Scene& scene) {
 }
 
 void parseCamera(string& line, Scene& scene) {
-  Vector3f up(0, 1, 0), direction, position;
+  Vector3f up(0, 1, 0), lookat, position;
   float focalLength, iw, ih;
 
   sscanf(line.c_str(), "c %f %f %f %f %f %f %f %f %f %d %d",
       &position[0], &position[1], &position[2],
-      &direction[0], &direction[1], &direction[2],
+      &lookat[0], &lookat[1], &lookat[2],
       &focalLength, &iw, &ih, &scene.width, &scene.height);
 
+  Vector3f direction = lookat - position;
   scene.camera = Camera(Ray(position, direction), up, focalLength, iw, ih);
 }
 
@@ -65,7 +68,7 @@ void parseLight(string& line, Scene& scene) {
 
     sscanf(line.c_str(), "l p %f %f %f %f %f %f",
         &location[0], &location[1], &location[2], &color.r, &color.g, &color.b);
-    scene.lights.push_back(PointLight(color, color, Color(0, 0, 0), location));
+    scene.lights.push_back(PointLight(color, color, Color(0, 0, 0), location, false));
   } else {
     cerr << "directional lights unsupported" << endl;
   }
@@ -81,9 +84,15 @@ void parseMaterial(string& line) {
       &(diff->r), &(diff->g), &(diff->b), &(spec->r), &(spec->g), &(spec->b),
       &phexp, &(idealspec->r), &(idealspec->g), &(idealspec->b));
 
-  cout << *idealspec << endl;
   currentMaterial = 
     new PhongMaterial(*spec, *diff, *diff, *idealspec, phexp);
+}
+
+void parseObj(string& line, Scene& scene) {
+  string filename = line.substr(4, line.length() - 4);
+  ifstream objfile(filename.c_str());
+  loadObjFile(objfile, scene, currentMaterial);
+  objfile.close();
 }
 
 void parseOption(string& line, Scene& scene) {
@@ -112,6 +121,8 @@ void parseLine(string& line, Scene& scene) {
     cout << "option unsupported" << endl;
   } else if (cmd == "p") {
     parsePlane(line, scene);
+  } else if (cmd == "obj") {
+    parseObj(line, scene);
   } else {
     cout << "unrecognized command: " << cmd << endl;
   }

@@ -55,7 +55,8 @@ ostream& operator<<(ostream&, const Color&);
 class PointLight {
   public:
     PointLight(Color spec, Color diff, Color amb, Vector3f loc)
-      : specular(spec), diffuse(diff), ambient(amb), location(loc) {}
+      : specular(spec), diffuse(diff), ambient(amb),
+        location(loc), directional(false) {}
     PointLight(Color spec, Color diff, Color amb, Vector3f loc, bool dir)
       : specular(spec), diffuse(diff), ambient(amb),
         location(loc), directional(dir) {}
@@ -129,17 +130,24 @@ class Sphere : public Geometry {
 
 class Triangle : public Geometry {
   public:
-    Triangle(const Vector3f& p1, const Vector3f& p2, const Vector3f& p3);
+    Triangle(
+        const Vector3f& p1, const Vector3f& p2, const Vector3f& p3);
+    Triangle(
+        const Vector3f& p1, const Vector3f& p2, const Vector3f& p3,
+        const Vector3f& n1, const Vector3f& n2, const Vector3f& n3);
     Triangle(const Triangle&);
     ~Triangle();
 
     Intersection intersect(const Ray& ray) const;
     Vector3f normal(const Vector3f& location) const;
 
+    friend ostream& operator<<(ostream&, const Triangle&);
   private:
     const Vector3f p1, p2, p3;
-    Vector3f norm;
+    const Vector3f n1, n2, n3;
 };
+
+ostream& operator<<(ostream&, const Triangle&);
 
 class Plane : public Geometry {
   public:
