@@ -1,10 +1,8 @@
 #include "geometry.h"
 
-Plane::Plane(const Vector3f& location, const Vector3f& normal)
-: location(location), norm(normal) {}
+Plane::Plane(const Vector3f& normal, const float& d) : norm(normal), d(d) {}
 
-Plane::Plane(const Plane& other)
-: location(other.location), norm(other.norm) {}
+Plane::Plane(const Plane& other) : norm(other.norm), d(d) {}
 
 Plane::~Plane() {}
 
@@ -12,8 +10,7 @@ Intersection Plane::intersect(const Ray& ray) const {
   Intersection result;
   result.geom = this;
 
-  float s =
-    (location.dot(norm) - ray.origin.dot(norm)) / ray.dir.dot(norm);
+  float s = (-d - ray.origin.dot(norm)) / ray.dir.dot(norm);
 
   if (s > 0) {
     result.s = s;

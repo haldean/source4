@@ -3,6 +3,7 @@
 Triangle::Triangle(const Vector3f& p1, const Vector3f& p2, const Vector3f& p3)
 : p1(p1), p2(p2), p3(p3) {
   norm = (p2-p1).cross(p3-p1);
+  norm.normalize();
 }
 
 Triangle::Triangle(const Triangle& other) 

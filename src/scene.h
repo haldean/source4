@@ -24,6 +24,8 @@ class Scene {
     int width;
     int height;
 
+    int msaa;
+
   private:
     Color colorAtRay(Ray&);
 };

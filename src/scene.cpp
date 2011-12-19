@@ -8,11 +8,11 @@ using namespace png;
 using namespace std;
 using namespace Eigen;
 
-Scene::Scene() : background_color(0., 0., 0.) { }
+Scene::Scene() : background_color(0., 0., 0.), msaa(1) { }
 
 Scene::Scene(GeometrySet& gs, Camera& c, vector<PointLight>& ls, int w, int h) 
-  : geom(gs), camera(c), lights(ls), background_color(0.f, 0.f, 0.f),
-    width(w), height(h) {}
+: geom(gs), camera(c), lights(ls), background_color(0.f, 0.f, 0.f),
+width(w), height(h), msaa(1) {}
 
 rgb_pixel pixel_for(Color c) {
   return rgb_pixel(c.r * 255, c.g * 255, c.b * 255);
@@ -35,9 +35,36 @@ void Scene::render() {
 
   for (float i = -0.5; i <= 0.5; i += 1. / (float) width) {
     for (float j = -0.5; j <= 0.5; j += 1. / (float) height) {
-      Ray ray = camera.rayForH(i, j);
-      Color pixel = colorAtRay(ray);
-      img.set_pixel((i + 0.5) * width, (j + 0.5) * height, pixel_for(pixel));
+      int pi = (i + .5) * width
+        , pj = (j + .5) * height;
+
+      if (msaa == 1) {
+        Ray ray = camera.rayForH(i, j);
+        Color pixel = colorAtRay(ray);
+        img.set_pixel(pi, pj, pixel_for(pixel));
+      } else {
+        float r = 0, g = 0, b = 0;
+
+        for (int k=0; k<msaa; k++) {
+          float i_offset = ((float) rand() / RAND_MAX);
+          i_offset *= 1. / (float) width;
+
+          float j_offset = ((float) rand() / RAND_MAX);
+          j_offset *= 1. / (float) height;
+
+          Ray ray = camera.rayForH(i+i_offset, j+j_offset);
+          Color pixel = colorAtRay(ray);
+          r += pixel.r;
+          g += pixel.g;
+          b += pixel.b;
+        }
+
+        r /= msaa;
+        g /= msaa;
+        b /= msaa;
+
+        img.set_pixel(pi, pj, pixel_for(Color(r, g, b)));
+      }
     }
   }
 
@@ -62,7 +89,7 @@ int scene_test() {
   Sphere* sphere2 = new Sphere(.5, Vector3f(4, 0, 0));
   Triangle* triangle = new Triangle(
       Vector3f(5, 0, 0), Vector3f(5, 1, 0), Vector3f(5, 0, 1));
-  Plane* plane = new Plane(Vector3f(8, 0, 0), Vector3f(-1, 0, 0));
+  Plane* plane = new Plane(Vector3f(-1, 0, 0), 8);
 
   PhongMaterial* red = new PhongMaterial(
       Color(1, 1, 1), Color(.7, 0, 0), Color(.7, 0, 0), Color(0, 0, 0), 8);
@@ -90,6 +117,8 @@ int scene_test() {
         Color(0.5, 0.5, 0.5), Color(0.5, 0.5, 0.5),
         Color(.3, .3, .3), Vector3f(0, 0, 5)));
 
-  Scene(geom, c, lights, 600, 600).render();
+  Scene scene(geom, c, lights, 600, 600);
+  scene.msaa = 16;
+  scene.render();
   return 0;
 }

@@ -141,7 +141,7 @@ class Triangle : public Geometry {
 
 class Plane : public Geometry {
   public:
-    Plane(const Vector3f& location, const Vector3f& normal);
+    Plane(const Vector3f& normal, const float& d);
     Plane(const Plane&);
     ~Plane();
 
@@ -149,7 +149,8 @@ class Plane : public Geometry {
     Vector3f normal(const Vector3f& location) const;
 
   private:
-    const Vector3f location, norm;
+    const Vector3f norm;
+    const float& d;
 };
 
 #endif

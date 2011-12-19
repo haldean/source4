@@ -29,6 +29,16 @@ void parseTriangle(string& line, Scene& scene) {
   scene.geom.addGeometry(triangle);
 }
 
+void parsePlane(string& line, Scene& scene) {
+  Vector3f n;
+  float d;
+
+  sscanf(line.c_str(), "p %f %f %f %f", &n[0], &n[1], &n[2], &d);
+  Plane* plane = new Plane(n, d);
+  plane->material = currentMaterial;
+  scene.geom.addGeometry(plane);
+}
+
 void parseCamera(string& line, Scene& scene) {
   Vector3f up(0, 1, 0), direction, position;
   float focalLength, iw, ih;

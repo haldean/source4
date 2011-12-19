@@ -1,0 +1,20 @@
+BINARY=crender
+CC=g++
+CFLAGS=-c -Wall -g -O3 -I/usr/include/eigen3/
+LDFLAGS=-lpng
+SOURCES=$(wildcard *.cpp)
+OBJECTS=$(SOURCES:.cpp=.o)
+
+all: $(SOURCES) $(BINARY)
+	
+$(BINARY): $(OBJECTS) 
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+run: all
+	./${BINARY} && feh test.png
+
+clean:
+	rm -f ${OBJECTS} ${BINARY}
