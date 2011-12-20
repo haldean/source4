@@ -1,0 +1,18 @@
+SOURCE4 RAYTRACER
+William Brown (whb2107)
+
+Raytracer which completes all of phases one and two, all but the BVH in phase
+three, and adds depth of field as well. Everything conforms to the grammar given
+in the assignment. To activate antialiasing, use the option:
+
+o a N
+
+Where N is the number of subsamples to take for each pixel. To activate depth of
+field, use the option:
+
+o d N A F
+
+Where N is the number of subsamples to take for each pixel, A is the aperture
+and F is the focal length. Sample scenes are provided in the scenes/ directory.
+
+All output images are written to test.exr.

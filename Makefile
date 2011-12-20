@@ -1,9 +1,9 @@
 all:
 	make -C src
-	cp src/crender .
+	cp src/source4 .
 
 clean:
 	make -C src clean
 
 run: all
-	./crender
+	./source4

@@ -7,11 +7,27 @@
 using namespace std;
 using namespace Eigen;
 
-Scene::Scene() : background_color(0., 0., 0.), msaa(1) { }
+/* Taken from http://stackoverflow.com/questions/686353/c-random-float */
+float randFloat() {
+  return (float)(((rand() << 15) + rand()) & ((1 << 24) - 1)) / (1 << 24);
+}
+
+Scene::Scene() : background_color(0., 0., 0.) {
+  setDefaults();
+}
 
 Scene::Scene(GeometrySet& gs, Camera& c, vector<PointLight>& ls, int w, int h) 
 : geom(gs), camera(c), lights(ls), background_color(0.f, 0.f, 0.f),
-width(w), height(h), msaa(1) {}
+width(w), height(h) {
+  setDefaults();
+}
+
+void Scene::setDefaults() {
+  msaa = 1;
+  dofSamples = 0;
+  aperture = .5;
+  focaldist = 15;
+}
 
 Color Scene::colorAtRay(
     Ray& ray, const Geometry* ignore, const int depth) const {
@@ -27,8 +43,32 @@ Color Scene::colorAtRay(
 }
 
 Color Scene::colorAtRay(Ray& ray) const {
-  //cout << ray << endl;
   return colorAtRay(ray, NULL, 0);
+}
+
+Color Scene::colorAtRayDof(Ray& ray) const {
+  if (dofSamples == 0) {
+    return colorAtRay(ray);
+  }
+
+  float r = 0, g = 0, b = 0;
+  Vector3f focalpt = ray.origin + focaldist * ray.dir;
+  for (int i=0; i<dofSamples; i++) {
+    float x_offset = aperture * randFloat();
+    float y_offset = aperture * randFloat();
+    float z_offset = aperture * randFloat();
+
+    Vector3f origin = ray.origin + Vector3f(x_offset, y_offset, z_offset);
+    Ray testRay(origin, focalpt - origin);
+    Color c = colorAtRay(testRay);
+    r += c.r; g += c.g; b += c.b;
+  }
+
+  Color result(
+      r / (float) dofSamples,
+      g / (float) dofSamples,
+      b / (float) dofSamples);
+  return result;
 }
 
 void Scene::render() {
@@ -41,20 +81,20 @@ void Scene::render() {
 
       if (msaa == 1) {
         Ray ray = camera.rayForH(i, j);
-        Color pixel = colorAtRay(ray);
+        Color pixel = colorAtRayDof(ray);
         img.setPixel(pi, pj, pixel);
       } else {
         float r = 0, g = 0, b = 0;
 
         for (int k=0; k<msaa; k++) {
           float i_offset = ((float) rand() / RAND_MAX);
-          i_offset *= 1. / (float) width;
+          i_offset *= .5 / (float) width;
 
           float j_offset = ((float) rand() / RAND_MAX);
-          j_offset *= 1. / (float) height;
+          j_offset *= .5 / (float) height;
 
           Ray ray = camera.rayForH(i+i_offset, j+j_offset);
-          Color pixel = colorAtRay(ray);
+          Color pixel = colorAtRayDof(ray);
           r += pixel.r;
           g += pixel.g;
           b += pixel.b;

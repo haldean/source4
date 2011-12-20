@@ -26,8 +26,16 @@ class Scene {
 
     int msaa;
 
+    int dofSamples;
+    float aperture;
+    float focaldist;
+
     Color colorAtRay(Ray&) const;
     Color colorAtRay(Ray&, const Geometry* ignore, const int depth) const;
+    Color colorAtRayDof(Ray&) const;
+
+  private:
+    void setDefaults();
 };
 
 ostream& operator<<(ostream&, const Scene&);

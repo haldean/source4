@@ -15,13 +15,13 @@ PHASE 2
 
 PHASE 3
 [X] Antialiasing
-[ ] OBJ files with normal interpolation
+[X] OBJ files with normal interpolation
 [ ] BVH for intersection
 
 EXTRA
 [ ] Refraction
 [ ] Multithreading
 [I] Transforms
-[ ] Depth of field
+[X] Depth of field
 [I] Motion blur
 [I] Area lights and soft shadows

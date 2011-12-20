@@ -1,5 +1,5 @@
-c 10 10 10 0 0 0 1 1 1 600 600
+c 30 30 30 0 0 0 1 1 1 600 600
 m 1 1 1 0 0 0 64 0 0 0
-obj models/cube.obj
+obj models/toilet.obj
 l p 30 15 0 .8 .8 .8
 l a .2 .2 .2

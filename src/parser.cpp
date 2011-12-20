@@ -96,10 +96,15 @@ void parseObj(string& line, Scene& scene) {
 }
 
 void parseOption(string& line, Scene& scene) {
-  if (line[3] == 'a') {
+  if (line[2] == 'a') {
     int msaa;
     sscanf(line.c_str(), "o a %d", &msaa);
     scene.msaa = msaa;
+  } else if (line[2] == 'd') {
+    sscanf(line.c_str(), "o d %d %f %f",
+        &scene.dofSamples, &scene.aperture, &scene.focaldist);
+  } else {
+    cout << "option " << line << " unsupported" << endl;
   }
 }
 
@@ -118,7 +123,7 @@ void parseLine(string& line, Scene& scene) {
   } else if (cmd == "l") {
     parseLight(line, scene);
   } else if (cmd == "o") {
-    cout << "option unsupported" << endl;
+    parseOption(line, scene);
   } else if (cmd == "p") {
     parsePlane(line, scene);
   } else if (cmd == "obj") {
