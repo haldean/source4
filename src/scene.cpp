@@ -23,7 +23,7 @@ width(w), height(h) {
 }
 
 void Scene::setDefaults() {
-  msaa = 4;
+  msaa = 1;
   dofSamples = 0;
   aperture = .5;
   focaldist = 15;
@@ -109,7 +109,10 @@ void Scene::render() {
     }
   }
 
+#ifdef WRITE_PNG
   img.writePng("test.png");
+#endif
+  img.writeExr("test.exr");
 }
 
 ostream& operator<<(ostream& stream, const Scene& scene) {
