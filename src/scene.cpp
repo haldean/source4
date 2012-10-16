@@ -109,10 +109,7 @@ void Scene::render() {
     }
   }
 
-#ifdef WRITE_PNG
   img.writePng("test.png");
-#endif
-  img.writeExr("test.exr");
 }
 
 ostream& operator<<(ostream& stream, const Scene& scene) {
