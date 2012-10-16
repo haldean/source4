@@ -1,24 +1,23 @@
 #include "image.h"
-#include <ImfStringAttribute.h>
-#include <ImfMatrixAttribute.h>
+
+using namespace png;
+
+Rgba::Rgba() : r(0), g(0), b(0), a(0) {}
+Rgba::Rgba(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {}
 
 Image::Image(int width, int height) : w(width), h(height) {
-  pixels.resizeErase(height, width);
+  pixels = new Rgba*[height];
+  for (int j = 0; j < height; j++) {
+    pixels[j] = new Rgba[width];
+    for (int i = 0; i < width; i++) {
+      pixels[j][i] = Rgba(0, 0, 0, 1);
+    }
+  }
 }
 
 void Image::setPixel(int i, int j, const Color& color) {
   pixels[j][i] = Rgba(color.r, color.g, color.b, 1);
 }
-
-void Image::writeExr(const string& path) const {
-  RgbaOutputFile file(path.c_str(), w, h, WRITE_RGBA);
-  file.setFrameBuffer(&(pixels[0][0]), 1, w);
-  file.writePixels(h);
-}
-
-#ifdef WRITE_PNG
-#include <png++/png.hpp>
-using namespace png;
 
 void Image::writePng(const string& path) const {
   image<rgb_pixel> output(w, h);
@@ -30,4 +29,3 @@ void Image::writePng(const string& path) const {
   }
   output.write(path);
 }
-#endif
